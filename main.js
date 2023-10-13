@@ -2,6 +2,7 @@
 let factoryOfferPhase;
 let wallTilingPhase;
 let hasChosenFactory = false;
+let round;
 
 const bag = [
   { blue: 20 },
@@ -187,3 +188,26 @@ lineContainer.addEventListener("drop", (e) => {
   hasChosenFactory = false;
   console.log(hasChosenFactory);
 });
+
+document.querySelector("button").addEventListener("click", wallTiling);
+
+
+const lines = document.querySelectorAll(".line");
+function wallTiling() {
+  console.log("wall tiling phase active");
+  for (const line of lines) {
+    const containers = line.children;
+    // checks if line is not complete, move on to the next line
+    if (![...containers].every((item) => item.firstChild)) {
+      console.log(line + ": PASSED OVER")
+      continue;
+    }
+    console.log(line + ": LINE EXECUTED")
+    const currentLineRow = line.classList[1];
+    const currentWallRow = document.querySelectorAll(`.wall-tile.${currentLineRow}`);
+    const firstTile = line.firstElementChild.firstElementChild;
+    const firstTileColour = firstTile.classList[1];
+    const currentWallTile = [...currentWallRow].find((square) => square.classList.contains(firstTileColour));
+    currentWallTile.append(firstTile);
+  }
+}

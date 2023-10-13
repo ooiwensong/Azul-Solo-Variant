@@ -183,7 +183,7 @@ body {
   margin-left: 4px;
 }
 
-.wall-tile {
+.wall-tile.piece-container {
   opacity: 0.4;
   /* border: 2px solid #cbad8d; */
   width: 50px;
