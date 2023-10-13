@@ -127,62 +127,63 @@ table.addEventListener("click", (e) => {
 let draggedPiece;
 hand.addEventListener("dragstart", (e) => {
   draggedPiece = e.target;
-  // console.log(e.target.classList[1]);
-  // console.log(draggedPiece);
 })
 
 lineContainer.addEventListener("dragover", (e) => {
   e.preventDefault();
 })
 
-let chosenRow;
 lineContainer.addEventListener("drop", (e) => {
   // e.stopPropagation();
-
-  const targetRow = e.target.parentNode.classList[1];
+  const targetRow = e.target.parentNode;
+  const targetRowName = e.target.parentNode.classList[1];
   const firstPosition = e.target.parentNode.children[0];
   const draggedPieceColour = draggedPiece.classList[1];
+  const floor = document.querySelectorAll(".floor-tile");
 
-  // If space is occupied,  peice cannot be dropped
+  // If space is occupied,  peice cannot be dropped; piece cannot be dropped outside of grids
   if (e.target.classList.contains("piece") || e.target.classList.contains("line")) {
+    console.log("return point 1")
     return;
   }
-
-  // If first position of a line is empty, piece cannot be dropped into other positions along the line.
-  if (firstPosition.children.length === 0 && e.target !== firstPosition) {
+  // Cannot drop piece in a row with existing pieces of different colours
+  if (firstPosition.firstChild && firstPosition.firstChild.classList[1] !== draggedPieceColour) {
+    console.log("return point 2")
     return;
   }
+  // CHECK FOR PIECES IN THE WALL AREA
 
-  if (!chosenRow /* ADD CONDITION TO CHECK IF WALL HAS SAME COLOR TILE */) {
-    e.target.append(draggedPiece);
-    chosenRow = targetRow;
-  } else if (chosenRow === targetRow) {
-    e.target.append(draggedPiece);
-  } else if (draggedPieceColour === firstPosition.firstChild.classList[1]) {
-    e.target.append(draggedPiece);
+  // Append all the tiles in hand to the selected row
+  for (const square of [...targetRow.children]) {
+    // Once the hand is empty, break from the loop
+    if (!hand.firstChild) {
+      console.log("break point 1")
+      break;
+    }
+    // if square contains a piece, move on to the next empty square
+    if (square.firstChild && square.firstChild.classList.contains("piece")) {
+      continue;
+    } else {
+      square.append(hand.firstChild);
+    }
   }
-
-  if (chosenRow) {
-
+  // If there are leftover pieces in hand, append them to floor
+  if (hand.children.length > 0) {
+    console.log("hand has leftovers");
+    for (const floorTile of floor) {
+      // if hand is empty, break from the loop
+      if (!hand.firstChild) {
+        console.log("break point 2")
+        break;
+      }
+      // if floor tile contains a piece, move on to the next
+      if (floorTile.firstChild) {
+        continue;
+      }
+      floorTile.append(hand.firstChild);
+    }
   }
-  // if (draggedPieceColour !== firstPosition.firstChild.classList[1]) {
-  //   return;
-  // } 
-
-  // If a row has not been picked (empty), first tile dropped should be in the first position of any row.
-  // If a row has been picked, then subsequent tiles can only be placed in the same row.
-  // If there is an existing uncompleted row, tiles of the same colour can be placed there as well.
-
-  /*
-  }*/
-  console.log(firstPosition.firstChild.classList[1]);
-
-  // If the hand is empty, Dummy takes an action.
-  if (hand.children.length === 0) {
-    // dummyTurn();
-    hasChosenFactory = false;
-    chosenRow = "";
-  }
-  // console.log(draggedPiece.classList[1])
-  // console.log(firstPosition.firstChild.classList[1])
+  // dummyTurn();
+  hasChosenFactory = false;
+  console.log(hasChosenFactory);
 });
