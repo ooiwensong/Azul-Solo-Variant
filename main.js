@@ -80,6 +80,7 @@ function setupFactory(factory) {
 function setupFactories() {
   const factoriesArray = document.querySelectorAll(".factory");
   factoriesArray.forEach((factory) => setupFactory(factory));
+  console.log(bag);
 }
 
 
@@ -137,22 +138,29 @@ lineContainer.addEventListener("dragover", (e) => {
 lineContainer.addEventListener("drop", (e) => {
   // e.stopPropagation();
   const targetRow = e.target.parentNode;
-  const targetRowName = e.target.parentNode.classList[1];
+  const targetRowName = targetRow.classList[1];
+  const targetWallRow = document.querySelectorAll(`.wall-tile.${targetRowName}`);
   const firstPosition = e.target.parentNode.children[0];
   const draggedPieceColour = draggedPiece.classList[1];
   const floor = document.querySelectorAll(".floor-tile");
 
   // If space is occupied,  peice cannot be dropped; piece cannot be dropped outside of grids
   if (e.target.classList.contains("piece") || e.target.classList.contains("line")) {
-    console.log("return point 1")
+    console.log("Space is already occupied")
     return;
   }
   // Cannot drop piece in a row with existing pieces of different colours
   if (firstPosition.firstChild && firstPosition.firstChild.classList[1] !== draggedPieceColour) {
-    console.log("return point 2")
+    console.log("Cannot drop into line containing pieces of a different colour")
     return;
   }
-  // CHECK FOR PIECES IN THE WALL AREA
+  // Cannot drop piece if wall contains the same colour
+  const targetWallTile = [...targetWallRow].find((square) => square.classList.contains(draggedPieceColour));
+  console.log(targetWallTile);
+  if (targetWallTile.firstElementChild) {
+    console.log("Wall already contains tile of the same colour.")
+    return;
+  }
 
   // Append all the tiles in hand to the selected row
   for (const square of [...targetRow.children]) {
@@ -197,7 +205,11 @@ function wallTiling() {
   console.log("wall tiling phase active");
   for (const line of lines) {
     const containers = line.children;
-    // checks if line is not complete, move on to the next line
+    // Prevents error occurring if users press button twice
+    if (!containers[0].firstElementChild) {
+      continue;
+    }
+    // if line is not complete, move on to the next line
     if (![...containers].every((item) => item.firstChild)) {
       console.log(line + ": PASSED OVER")
       continue;
