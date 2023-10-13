@@ -1,0 +1,211 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  background-color: #012c3c;
+}
+
+#wrapper {
+  background-color: white;
+  width: 1010px;
+  height: 100%;
+  display: flex;
+  margin: 0 auto;
+}
+
+#game-container {
+  background-color: #e8dccf;
+  flex: 1;
+  margin: auto auto;
+  height: 650px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  gap: 5px;
+  padding: 4px;
+}
+
+#factories {
+  grid-column: 1/13;
+  grid-row: 1/4;
+  display: flex;
+}
+
+#hand {
+  grid-column: 1/8;
+  grid-row: 4/6;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+#player-area {
+  grid-column: 1/8;
+  grid-row: 6/13;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 80% 20%;
+  border: 4px solid #0083ad;
+  border-radius: 5px;
+}
+
+#table {
+  background-image: url("https://i0.wp.com/www.myboysen.com/wp-content/uploads/2019/01/Surface-Prep-Repainting-New-Wooden.jpg?fit=1309%2C603&quality=89&ssl=1");
+  grid-column: 8/13;
+  grid-row: 4/7;
+  border: 4px solid rgb(154, 107, 56);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#info-display {
+  grid-column: 8/13;
+  grid-row: 7/13;
+  border: 4px solid #0083ad;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 5px;
+}
+
+#info-display div {
+  border: 1px solid black;
+}
+
+.text-area {
+  grid-column: 1/3;
+  grid-row: 1/3;
+}
+
+.buttons {
+  grid-column: 1/2;
+  grid-row: 3/4;
+}
+
+.scoreboard {
+  grid-column: 2/3;
+  grid-row: 3/4;
+}
+
+.factory {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 50px 50px;
+  grid-template-rows: 50px 50px;
+  gap: 3px;
+  justify-content: center;
+  align-content: center;
+}
+
+.piece {
+  width: 50px;
+  height: 50px;
+  margin-right: 3px;
+  border-radius: 5px;
+  box-shadow: 1.5px 1.5px 3px black,
+    -1.5px -1.5px 1px rgba(0, 0, 0, 0.427) inset,
+    1.5px 1.5px 1px rgba(255, 255, 255, 0.577) inset;
+}
+
+#player-area-top {
+  grid-row: 1/2;
+  display: flex;
+  justify-content: center;
+  border-radius: 5px;
+  border: solid rgba(255, 255, 255, 0);
+}
+
+#floor {
+  grid-row: 2/3;
+  border: solid rgba(255, 255, 255, 0);
+  display: grid;
+  grid-template-columns: repeat(7, 50px);
+  grid-template-rows: auto 50px;
+  justify-content: center;
+  align-items: center;
+}
+
+#floor > div {
+  outline: solid black;
+  text-align: center;
+}
+
+.floor-tile.piece-container {
+  height: 50px;
+}
+
+#line-container {
+  max-width: 290px;
+  max-height: 280px;
+  flex: 1;
+  /* border: solid darkorange; */
+}
+
+#arrow-container {
+  max-width: 30px;
+  max-height: 250px;
+  flex: 1;
+  border: solid darkblue;
+}
+
+#wall {
+  max-width: 290px;
+  max-height: 280px;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 50px);
+  grid-template-rows: repeat(5, 50px);
+  gap: 4px;
+  /* border: solid darkorange; */
+}
+
+.line {
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  margin-bottom: 4px;
+  /* border: 1px solid black; */
+}
+
+.line-tile {
+  background-color: #e0b68a;
+  /* border: 2px solid #cbad8d; */
+  width: 50px;
+  height: 50px;
+  margin-left: 4px;
+}
+
+.wall-tile {
+  opacity: 0.4;
+  /* border: 2px solid #cbad8d; */
+  width: 50px;
+  height: 50px;
+}
+
+.blue {
+  background-color: #0083ad;
+}
+
+.yellow {
+  background-color: #ffbf3c;
+}
+
+.red {
+  background-color: #f5333f;
+}
+
+.black {
+  background-color: #454545;
+}
+
+.white {
+  background-color: #ffffff;
+}
