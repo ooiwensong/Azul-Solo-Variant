@@ -3,6 +3,8 @@ let factoryOfferPhase;
 let wallTilingPhase;
 let hasChosenFactory = false;
 let round;
+let score;
+let infoMsg;
 
 const bag = [
   { blue: 20 },
@@ -12,19 +14,15 @@ const bag = [
   { white: 20 },
 ]
 
-const pieces = {
-  blue: '<div class="piece blue"></div>',
-  yellow: '<div class="piece yellow"></div>',
-  red: '<div class="piece red"></div>',
-  black: '<div class="piece black"></div>',
-  white: '<div class="piece white"></div>',
-}
+const tileColours = ["blue", "yellow", "red", "black", "white"];
+const forIteration = ["one", "two", "three", "four", "five"];
 
 /*----- element references -----*/
 const factories = document.querySelector("#factories");
 const hand = document.querySelector("#hand")
 const table = document.querySelector("#table");
 const lineContainer = document.querySelector("#line-container");
+const lines = document.querySelectorAll(".line");
 
 /*----- functions -----*/
 function setupFactory(factory) {
@@ -34,7 +32,7 @@ function setupFactory(factory) {
     // Selecting a non-empty colour
     tileQuantity = 0;
     while (tileQuantity === 0) {
-      selectedTile = bag[Math.floor(Math.random() * bag.length)]; // object (KVP)
+      selectedTile = bag[Math.floor(Math.random() * bag.length)];
       if (Object.values(selectedTile)[0] > 0) {
         tileQuantity = Object.values(selectedTile)[0];
       }
@@ -83,6 +81,24 @@ function setupFactories() {
   console.log(bag);
 }
 
+function wallTileScoring(tilePosition) {
+
+}
+
+function finalScoring() {
+  // Checks for 5 of a kind in the wall
+  for (const colour of tileColours) {
+    const currentSquares = document.querySelectorAll(`.wall-tile.${colour}`);
+    currentSquares.every((square) => square.firstElementChild) ? score += 10 : score += 0;
+  }
+  for (const num of forIteration) {
+    const allColumns = document.querySelectorAll(`.wall-tile.column-${num}`);
+    const allRows = document.querySelectorAll(`.wall-tile.row-${num}`);
+    allColumns.every((square) => square.firstElementChild) ? score += 7 : score += 0;
+    allRows.every((square) => square.firstElementChild) ? score += 2 : score += 0;
+  }
+}
+
 
 /*----- game logic -----*/
 setupFactories();
@@ -90,6 +106,7 @@ setupFactories();
 
 factories.addEventListener("click", (e) => {
   if (hasChosenFactory == true) {
+    console.log("Place your hand pieces into the lines below")
     return;
   }
   if (!e.target.classList.contains("piece")) {
@@ -110,6 +127,7 @@ factories.addEventListener("click", (e) => {
 
 table.addEventListener("click", (e) => {
   if (hasChosenFactory == true) {
+    console.log("Place your hand pieces into the lines below")
     return;
   }
   if (!e.target.classList.contains("piece")) {
@@ -130,11 +148,9 @@ let draggedPiece;
 hand.addEventListener("dragstart", (e) => {
   draggedPiece = e.target;
 })
-
 lineContainer.addEventListener("dragover", (e) => {
   e.preventDefault();
 })
-
 lineContainer.addEventListener("drop", (e) => {
   // e.stopPropagation();
   const targetRow = e.target.parentNode;
@@ -166,7 +182,6 @@ lineContainer.addEventListener("drop", (e) => {
   for (const square of [...targetRow.children]) {
     // Once the hand is empty, break from the loop
     if (!hand.firstChild) {
-      console.log("break point 1")
       break;
     }
     // if square contains a piece, move on to the next empty square
@@ -178,11 +193,9 @@ lineContainer.addEventListener("drop", (e) => {
   }
   // If there are leftover pieces in hand, append them to floor
   if (hand.children.length > 0) {
-    console.log("hand has leftovers");
     for (const floorTile of floor) {
       // if hand is empty, break from the loop
       if (!hand.firstChild) {
-        console.log("break point 2")
         break;
       }
       // if floor tile contains a piece, move on to the next
@@ -194,13 +207,10 @@ lineContainer.addEventListener("drop", (e) => {
   }
   // dummyTurn();
   hasChosenFactory = false;
-  console.log(hasChosenFactory);
 });
 
 document.querySelector("button").addEventListener("click", wallTiling);
 
-
-const lines = document.querySelectorAll(".line");
 function wallTiling() {
   console.log("wall tiling phase active");
   for (const line of lines) {
@@ -221,5 +231,6 @@ function wallTiling() {
     const firstTileColour = firstTile.classList[1];
     const currentWallTile = [...currentWallRow].find((square) => square.classList.contains(firstTileColour));
     currentWallTile.append(firstTile);
+    wallTileScoring(firstTile);
   }
 }
