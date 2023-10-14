@@ -254,6 +254,7 @@ lineContainer.addEventListener("drop", (e) => {
     if (square.firstChild && square.firstChild.classList.contains("piece")) {
       continue;
     } else {
+      hand.firstChild.setAttribute("draggable", false);
       square.append(hand.firstChild);
     }
   }
@@ -268,6 +269,7 @@ lineContainer.addEventListener("drop", (e) => {
       if (floorTile.firstChild) {
         continue;
       }
+      hand.firstChild.setAttribute("draggable", false);
       floorTile.append(hand.firstChild);
     }
   }
@@ -293,6 +295,7 @@ document.querySelector(".button").addEventListener("click", () => {
     const firstTile = line.firstElementChild.firstElementChild;
     const firstTileColour = firstTile.classList[1];
     const currentWallTile = [...currentWallRow].find((square) => square.classList.contains(firstTileColour));
+    firstTile.setAttribute("draggable", false);
     currentWallTile.append(firstTile);
     wallTileScoring(currentWallTile);
   }
