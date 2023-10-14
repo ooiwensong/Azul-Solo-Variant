@@ -90,6 +90,21 @@ function setupFactories() {
   console.log(bag);
 }
 
+function moveToFloor() {
+  for (const square of floor) {
+    // if hand is empty, break from the loop
+    if (!hand.firstChild) {
+      break;
+    }
+    // if floor tile contains a piece, move on to the next
+    if (square.firstChild) {
+      continue;
+    }
+    hand.firstChild.setAttribute("draggable", false);
+    square.append(hand.firstChild);
+  }
+}
+
 function wallTileScoring(currentTilePos) {
   score += 1;
   let currentTileCol = currentTilePos.classList[2];
@@ -260,18 +275,7 @@ lineContainer.addEventListener("drop", (e) => {
   }
   // If there are leftover pieces in hand, append them to floor
   if (hand.children.length > 0) {
-    for (const floorTile of floor) {
-      // if hand is empty, break from the loop
-      if (!hand.firstChild) {
-        break;
-      }
-      // if floor tile contains a piece, move on to the next
-      if (floorTile.firstChild) {
-        continue;
-      }
-      hand.firstChild.setAttribute("draggable", false);
-      floorTile.append(hand.firstChild);
-    }
+    moveToFloor();
   }
   // dummyTurn();
   hasChosenFactory = false;
