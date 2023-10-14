@@ -3,7 +3,7 @@ let factoryOfferPhase;
 let wallTilingPhase;
 let hasChosenFactory = false;
 let round;
-let score;
+let score = 0;
 let infoMsg;
 
 const bag = [
@@ -81,8 +81,56 @@ function setupFactories() {
   console.log(bag);
 }
 
-function wallTileScoring(tilePosition) {
-
+function wallTileScoring(currentTilePos) {
+  score += 1;
+  let currentTileCol = currentTilePos.classList[2];
+  let nextSibling = currentTilePos.nextElementSibling;
+  let previousSibling = currentTilePos.previousElementSibling;
+  // Search for adjacent tiles in the column for pieces for scoring
+  while (nextSibling) {
+    if (nextSibling.classList[2] === currentTileCol) {
+      if (!nextSibling.firstElementChild) {
+        break;
+      } else {
+        score += 1;
+      }
+    }
+    nextSibling = nextSibling.nextElementSibling;
+  }
+  while (previousSibling) {
+    if (previousSibling.classList[2] === currentTileCol) {
+      if (!previousSibling.firstElementChild) {
+        break;
+      } else {
+        score += 1;
+      }
+    }
+    previousSibling = previousSibling.previousElementSibling;
+  }
+  nextSibling = currentTilePos.nextElementSibling;
+  previousSibling = currentTilePos.previousElementSibling;
+  // Search for adjacent tiles in the row for pieces for scoring
+  let currentTileRow = currentTilePos.classList[3];
+  while (nextSibling) {
+    if (nextSibling.classList[3] === currentTileRow) {
+      if (!nextSibling.firstElementChild) {
+        break;
+      } else {
+        score += 1;
+      }
+    }
+    nextSibling = nextSibling.nextElementSibling;
+  }
+  while (previousSibling) {
+    if (previousSibling.classList[3] === currentTileRow) {
+      if (!previousSibling.firstElementChild) {
+        break;
+      } else {
+        score += 1;
+      }
+    }
+    previousSibling = previousSibling.previousElementSibling;
+  }
 }
 
 function finalScoring() {
@@ -91,6 +139,7 @@ function finalScoring() {
     const currentSquares = document.querySelectorAll(`.wall-tile.${colour}`);
     currentSquares.every((square) => square.firstElementChild) ? score += 10 : score += 0;
   }
+  // Checks for complete columns and rows
   for (const num of forIteration) {
     const allColumns = document.querySelectorAll(`.wall-tile.column-${num}`);
     const allRows = document.querySelectorAll(`.wall-tile.row-${num}`);
@@ -98,7 +147,6 @@ function finalScoring() {
     allRows.every((square) => square.firstElementChild) ? score += 2 : score += 0;
   }
 }
-
 
 /*----- game logic -----*/
 setupFactories();
@@ -221,16 +269,16 @@ function wallTiling() {
     }
     // if line is not complete, move on to the next line
     if (![...containers].every((item) => item.firstChild)) {
-      console.log(line + ": PASSED OVER")
       continue;
     }
-    console.log(line + ": LINE EXECUTED")
+    // if line is complete, append the first position piece to corresponding wall tile
     const currentLineRow = line.classList[1];
     const currentWallRow = document.querySelectorAll(`.wall-tile.${currentLineRow}`);
     const firstTile = line.firstElementChild.firstElementChild;
     const firstTileColour = firstTile.classList[1];
     const currentWallTile = [...currentWallRow].find((square) => square.classList.contains(firstTileColour));
     currentWallTile.append(firstTile);
-    wallTileScoring(firstTile);
+    wallTileScoring(currentWallTile);
+    console.log(score);
   }
 }
