@@ -150,7 +150,6 @@ function floorScoring() {
       count += 1;
     }
   }
-  console.log("score to be deducted: " + floorScoreLookup[count.toString()]);
   score -= floorScoreLookup[count.toString()];
 }
 
@@ -228,9 +227,9 @@ lineContainer.addEventListener("drop", (e) => {
   const firstPosition = e.target.parentNode.children[0];
   const draggedPieceColour = draggedPiece.classList[1];
 
-  // If space is occupied,  peice cannot be dropped; piece cannot be dropped outside of grids
+  // If space is occupied,  piece cannot be dropped; piece cannot be dropped outside of grids
   if (e.target.classList.contains("piece") || e.target.classList.contains("line")) {
-    console.log("Space is already occupied")
+    console.log("Not a valid space")
     return;
   }
   // Cannot drop piece in a row with existing pieces of different colours
@@ -240,7 +239,6 @@ lineContainer.addEventListener("drop", (e) => {
   }
   // Cannot drop piece if wall contains the same colour
   const targetWallTile = [...targetWallRow].find((square) => square.classList.contains(draggedPieceColour));
-  console.log(targetWallTile);
   if (targetWallTile.firstElementChild) {
     console.log("Wall already contains tile of the same colour.")
     return;
@@ -277,9 +275,7 @@ lineContainer.addEventListener("drop", (e) => {
   hasChosenFactory = false;
 });
 
-document.querySelector("button").addEventListener("click", wallTiling);
-
-function wallTiling() {
+document.querySelector(".button").addEventListener("click", () => {
   console.log("wall tiling phase active");
   for (const line of lines) {
     const containers = line.children;
@@ -299,6 +295,28 @@ function wallTiling() {
     const currentWallTile = [...currentWallRow].find((square) => square.classList.contains(firstTileColour));
     currentWallTile.append(firstTile);
     wallTileScoring(currentWallTile);
-    floorScoring();
+  }
+  floorScoring();
+  console.log("Total score: " + score);
+});
+
+
+document.querySelector(".remove").addEventListener("click", removePieces);
+function removePieces() {
+  for (const line of lines) {
+    if (line.firstElementChild.firstElementChild) {
+      continue;
+    }
+    const squares = line.children;
+    for (const square of squares) {
+      if (square.firstElementChild) {
+        square.firstElementChild.remove();
+      }
+    }
+  }
+  for (const square of floor) {
+    if (square.firstElementChild) {
+      square.firstElementChild.remove();
+    }
   }
 }
