@@ -5,7 +5,6 @@ let hasChosenFactory = false;
 let round;
 let score = 0;
 let infoMsg;
-
 const bag = [
   { blue: 20 },
   { yellow: 20 },
@@ -13,9 +12,18 @@ const bag = [
   { black: 20 },
   { white: 20 },
 ]
-
 const tileColours = ["blue", "yellow", "red", "black", "white"];
 const forIteration = ["one", "two", "three", "four", "five"];
+const floorScoreLookup = {
+  '0': 0,
+  '1': 1,
+  '2': 2,
+  '3': 4,
+  '4': 6,
+  '5': 8,
+  '6': 11,
+  '7': 14,
+}
 
 /*----- element references -----*/
 const factories = document.querySelector("#factories");
@@ -23,6 +31,7 @@ const hand = document.querySelector("#hand")
 const table = document.querySelector("#table");
 const lineContainer = document.querySelector("#line-container");
 const lines = document.querySelectorAll(".line");
+const floor = document.querySelectorAll(".floor-tile");
 
 /*----- functions -----*/
 function setupFactory(factory) {
@@ -133,6 +142,18 @@ function wallTileScoring(currentTilePos) {
   }
 }
 
+function floorScoring() {
+  let count = 0;
+  // counts number of pieces in the floor area
+  for (const square of floor) {
+    if (square.firstElementChild) {
+      count += 1;
+    }
+  }
+  console.log("score to be deducted: " + floorScoreLookup[count.toString()]);
+  score -= floorScoreLookup[count.toString()];
+}
+
 function finalScoring() {
   // Checks for 5 of a kind in the wall
   for (const colour of tileColours) {
@@ -206,7 +227,6 @@ lineContainer.addEventListener("drop", (e) => {
   const targetWallRow = document.querySelectorAll(`.wall-tile.${targetRowName}`);
   const firstPosition = e.target.parentNode.children[0];
   const draggedPieceColour = draggedPiece.classList[1];
-  const floor = document.querySelectorAll(".floor-tile");
 
   // If space is occupied,  peice cannot be dropped; piece cannot be dropped outside of grids
   if (e.target.classList.contains("piece") || e.target.classList.contains("line")) {
@@ -279,6 +299,6 @@ function wallTiling() {
     const currentWallTile = [...currentWallRow].find((square) => square.classList.contains(firstTileColour));
     currentWallTile.append(firstTile);
     wallTileScoring(currentWallTile);
-    console.log(score);
+    floorScoring();
   }
 }
