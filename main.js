@@ -27,6 +27,7 @@ const floorScoreLookup = {
 
 /*----- element references -----*/
 const factories = document.querySelector("#factories");
+const factoriesArray = document.querySelectorAll(".factory");
 const hand = document.querySelector("#hand")
 const table = document.querySelector("#table");
 const lineContainer = document.querySelector("#line-container");
@@ -85,7 +86,6 @@ function setupFactory(factory) {
 }
 
 function setupFactories() {
-  const factoriesArray = document.querySelectorAll(".factory");
   factoriesArray.forEach((factory) => setupFactory(factory));
   console.log(bag);
 }
@@ -183,6 +183,109 @@ function finalScoring() {
   }
 }
 
+function dummyTurn() {
+  console.log("Dummy makes a move");
+  const factoriesState = [];
+  let largestSetIndex;
+  let largestSetColour;
+  // if factories and table are empty, do nothing
+  if (![...factoriesArray].find((factory) => factory.children.length > 0) && table.children.length === 0) {
+    return;
+  }
+  // if all factories are empty, take a random tile from table
+  if (![...factoriesArray].find((factory) => factory.children.length > 0)) {
+    console.log("factories are empty!")
+    const randomPieceIndex = Math.floor(Math.random() * table.children.length);
+    const randomPieceColour = table.children[randomPieceIndex].classList[1];
+    [...table.children].forEach((tile) => {
+      if (tile.classList[1] === randomPieceColour) {
+        tile.remove();
+      }
+    })
+    return;
+  }
+  // Create an object to document number of each coloured piece in each factory
+  for (const factory of [...factoriesArray]) {
+    if (factory.children.length === 0) {
+      factoriesState.push({});
+      continue;
+    }
+    const factoryState = [...factory.children].reduce((a, piece) => {
+      a[piece.classList[1]] ? a[piece.classList[1]] += 1 : a[piece.classList[1]] = 1;
+      return a;
+    }, {})
+    factoriesState.push(factoryState);
+  }
+  console.log(factoriesState);
+  // Checks if any factory has a set of 4
+  if (factoriesState.find((factory) => Object.values(factory).includes(4))) {
+    largestSetIndex = factoriesState.findIndex((factory) => Object.values(factory).includes(4));
+    largestSetColour = Object.keys(factoriesState[largestSetIndex]).find((key) => factoriesState[largestSetIndex][key] === 4);
+    [...factoriesArray[largestSetIndex].children].forEach((tile) => {
+      if (tile.classList.contains(largestSetColour)) {
+        tile.remove();
+      } else {
+        table.append(tile);
+      }
+    })
+    console.log("Removed a set of 4");
+    return;
+  }
+  // Checks if any factory has a set of 3 
+  if (factoriesState.find((factory) => Object.values(factory).includes(3))) {
+    largestSetIndex = factoriesState.findIndex((factory) => Object.values(factory).includes(3));
+    largestSetColour = Object.keys(factoriesState[largestSetIndex]).find((key) => factoriesState[largestSetIndex][key] === 3);
+    [...factoriesArray[largestSetIndex].children].forEach((tile) => {
+      if (tile.classList.contains(largestSetColour)) {
+        tile.remove();
+      } else {
+        table.append(tile);
+      }
+    })
+    console.log("Removed a set of 3");
+    return;
+  }
+  // Checks if any factory has a set of 2 
+  if (factoriesState.find((factory) => Object.values(factory).includes(2))) {
+    largestSetIndex = factoriesState.findIndex((factory) => Object.values(factory).includes(2));
+    largestSetColour = Object.keys(factoriesState[largestSetIndex]).find((key) => factoriesState[largestSetIndex][key] === 2);
+    [...factoriesArray[largestSetIndex].children].forEach((tile) => {
+      if (tile.classList.contains(largestSetColour)) {
+        tile.remove();
+      } else {
+        table.append(tile);
+      }
+    })
+    console.log("Removed a set of 2");
+    return;
+  }
+  // Create an object to document number of each coloured piece in the table
+  const tableState = [...table.children].reduce((a, piece) => {
+    a[piece.classList[1]] ? a[piece.classList[1]] += 1 : a[piece.classList[1]] = 1;
+    return a;
+  }, {})
+  // Find the colour and quantity of the largest set in the table
+  const largestSetQty = Math.max(...Object.values(tableState));
+  largestSetColour = Object.keys(tableState).find((key) => tableState[key] === largestSetQty);
+  if (largestSetQty === 1) {
+    const leftmostFactory = [...factoriesArray].find((factory) => factory.children.length > 0);
+    const leftmostColour = leftmostFactory.firstElementChild.classList[1];
+    [...leftmostFactory.children].forEach((tile) => {
+      if (tile.classList.contains(leftmostColour)) {
+        tile.remove();
+      } else {
+        table.append(tile);
+      }
+    })
+  } else {
+    [...table.children].forEach((tile) => {
+      if (tile.classList.contains(largestSetColour)) {
+        tile.remove();
+      }
+    })
+  }
+}
+
 /*----- game logic -----*/
 setupFactories();
 
@@ -277,7 +380,8 @@ lineContainer.addEventListener("drop", (e) => {
   if (hand.children.length > 0) {
     moveToFloor();
   }
-  // dummyTurn();
+  dummyTurn();
+
   hasChosenFactory = false;
 });
 
@@ -327,3 +431,19 @@ function removePieces() {
     }
   }
 }
+
+document.querySelector(".dummy").addEventListener("click", dummyTurn);
+
+// // four of a kind
+// const found = [...factoriesArray].find((factory) => {
+//   if (factory.children.length > 0) {
+//     const tileColour = factory.firstElementChild.classList[1];
+//     return [...factory.children].every((piece) => piece.classList[1] === tileColour);
+//   }
+// })
+
+// // three of a kind
+// const found1 = [...factoriesArray].find((factory) => {
+//   if (factory.children.length > 0) {
+//   }
+// })
