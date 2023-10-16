@@ -172,15 +172,16 @@ function finalScoring() {
   // Checks for 5 of a kind in the wall
   for (const colour of tileColours) {
     const currentSquares = document.querySelectorAll(`.wall-tile.${colour}`);
-    currentSquares.every((square) => square.firstElementChild) ? score += 10 : score += 0;
+    [...currentSquares].every((square) => square.firstElementChild) ? score += 10 : score += 0;
   }
   // Checks for complete columns and rows
   for (const num of forIteration) {
     const allColumns = document.querySelectorAll(`.wall-tile.column-${num}`);
     const allRows = document.querySelectorAll(`.wall-tile.row-${num}`);
-    allColumns.every((square) => square.firstElementChild) ? score += 7 : score += 0;
-    allRows.every((square) => square.firstElementChild) ? score += 2 : score += 0;
+    [...allColumns].every((square) => square.firstElementChild) ? score += 7 : score += 0;
+    [...allRows].every((square) => square.firstElementChild) ? score += 2 : score += 0;
   }
+  console.log(score);
 }
 
 function dummyTurn() {
@@ -202,6 +203,7 @@ function dummyTurn() {
         tile.remove();
       }
     })
+    console.log("Removed a random set from the table")
     return;
   }
   // Create an object to document number of each coloured piece in each factory
@@ -216,7 +218,6 @@ function dummyTurn() {
     }, {})
     factoriesState.push(factoryState);
   }
-  console.log(factoriesState);
   // Checks if any factory has a set of 4
   if (factoriesState.find((factory) => Object.values(factory).includes(4))) {
     largestSetIndex = factoriesState.findIndex((factory) => Object.values(factory).includes(4));
@@ -267,6 +268,7 @@ function dummyTurn() {
   // Find the colour and quantity of the largest set in the table
   const largestSetQty = Math.max(...Object.values(tableState));
   largestSetColour = Object.keys(tableState).find((key) => tableState[key] === largestSetQty);
+  // if there are only sets of ones in the table
   if (largestSetQty === 1) {
     const leftmostFactory = [...factoriesArray].find((factory) => factory.children.length > 0);
     const leftmostColour = leftmostFactory.firstElementChild.classList[1];
@@ -275,12 +277,15 @@ function dummyTurn() {
         tile.remove();
       } else {
         table.append(tile);
+        console.log("Removed a set from the leftmost factory")
       }
     })
+    // if there are sets of larger than 1 in the table
   } else {
     [...table.children].forEach((tile) => {
       if (tile.classList.contains(largestSetColour)) {
         tile.remove();
+        console.log("Removed largest set from the table")
       }
     })
   }
@@ -380,7 +385,10 @@ lineContainer.addEventListener("drop", (e) => {
   if (hand.children.length > 0) {
     moveToFloor();
   }
-  dummyTurn();
+  // Dummy makes a move after 1sec.
+  setTimeout(() => {
+    dummyTurn();
+  }, 1000);
 
   hasChosenFactory = false;
 });
@@ -432,18 +440,4 @@ function removePieces() {
   }
 }
 
-document.querySelector(".dummy").addEventListener("click", dummyTurn);
-
-// // four of a kind
-// const found = [...factoriesArray].find((factory) => {
-//   if (factory.children.length > 0) {
-//     const tileColour = factory.firstElementChild.classList[1];
-//     return [...factory.children].every((piece) => piece.classList[1] === tileColour);
-//   }
-// })
-
-// // three of a kind
-// const found1 = [...factoriesArray].find((factory) => {
-//   if (factory.children.length > 0) {
-//   }
-// })
+document.querySelector(".final").addEventListener("click", finalScoring);
