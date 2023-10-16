@@ -203,7 +203,7 @@ function dummyTurn() {
         tile.remove();
       }
     })
-    console.log("Removed a random set from the table")
+    console.log(`Removed a random set of ${randomPieceColour} pieces from the table`)
     return;
   }
   // Create an object to document number of each coloured piece in each factory
@@ -221,15 +221,11 @@ function dummyTurn() {
   // Checks if any factory has a set of 4
   if (factoriesState.find((factory) => Object.values(factory).includes(4))) {
     largestSetIndex = factoriesState.findIndex((factory) => Object.values(factory).includes(4));
-    largestSetColour = Object.keys(factoriesState[largestSetIndex]).find((key) => factoriesState[largestSetIndex][key] === 4);
+    largestSetColour = factoriesArray[largestSetIndex].firstElementChild.classList[1];
     [...factoriesArray[largestSetIndex].children].forEach((tile) => {
-      if (tile.classList.contains(largestSetColour)) {
-        tile.remove();
-      } else {
-        table.append(tile);
-      }
+      tile.remove();
     })
-    console.log("Removed a set of 4");
+    console.log(`Dummy removed a set of 4 ${largestSetColour} pieces from the factory`);
     return;
   }
   // Checks if any factory has a set of 3 
@@ -243,21 +239,22 @@ function dummyTurn() {
         table.append(tile);
       }
     })
-    console.log("Removed a set of 3");
+    console.log(`Dummy removed a set of 3 ${largestSetColour} pieces from the factory`);
     return;
   }
   // Checks if any factory has a set of 2 
   if (factoriesState.find((factory) => Object.values(factory).includes(2))) {
     largestSetIndex = factoriesState.findIndex((factory) => Object.values(factory).includes(2));
-    largestSetColour = Object.keys(factoriesState[largestSetIndex]).find((key) => factoriesState[largestSetIndex][key] === 2);
+    largestSetColour = Object.keys(factoriesState[largestSetIndex]).filter((key) => factoriesState[largestSetIndex][key] === 2);
+    const randomColour = largestSetColour[Math.floor(Math.random() * largestSetColour.length)];
     [...factoriesArray[largestSetIndex].children].forEach((tile) => {
-      if (tile.classList.contains(largestSetColour)) {
+      if (tile.classList.contains(randomColour)) {
         tile.remove();
       } else {
         table.append(tile);
       }
     })
-    console.log("Removed a set of 2");
+    console.log(`Dummy removed a set of 2 ${randomColour} pieces from the factory`);
     return;
   }
   // Create an object to document number of each coloured piece in the table
@@ -267,25 +264,23 @@ function dummyTurn() {
   }, {})
   // Find the colour and quantity of the largest set in the table
   const largestSetQty = Math.max(...Object.values(tableState));
-  largestSetColour = Object.keys(tableState).find((key) => tableState[key] === largestSetQty);
   // if there are only sets of ones in the table
   if (largestSetQty === 1) {
     const leftmostFactory = [...factoriesArray].find((factory) => factory.children.length > 0);
-    const leftmostColour = leftmostFactory.firstElementChild.classList[1];
+    const randomTile = leftmostFactory.children[Math.floor(Math.random() * 4)];
+    randomTile.remove();
     [...leftmostFactory.children].forEach((tile) => {
-      if (tile.classList.contains(leftmostColour)) {
-        tile.remove();
-      } else {
-        table.append(tile);
-        console.log("Removed a set from the leftmost factory")
-      }
+      table.append(tile);
+      console.log(`Dummy removed a ${randomTile.classList[1]} piece from the leftmost factory`);
     })
     // if there are sets of larger than 1 in the table
   } else {
+    const largestTableSetsColours = Object.keys(tableState).filter((key) => tableState[key] === largestSetQty);
+    const randomColour = largestTableSetsColours[Math.floor(Math.random() * largestTableSetsColours.length)];
     [...table.children].forEach((tile) => {
-      if (tile.classList.contains(largestSetColour)) {
+      if (tile.classList.contains(randomColour)) {
         tile.remove();
-        console.log("Removed largest set from the table")
+        console.log(`Dummy removed ${randomColour} pieces from the table`);
       }
     })
   }
