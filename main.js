@@ -5,7 +5,6 @@ let hasChosenFactory;
 let round;
 let score;
 let infoMsg;
-let phase;
 let bag;
 const tileColours = ["blue", "yellow", "red", "black", "white"];
 const forIteration = ["one", "two", "three", "four", "five"];
@@ -31,10 +30,11 @@ const floor = document.querySelectorAll(".floor-tile");
 
 /*----- functions -----*/
 function initialise() {
+  document.querySelector("#game-start-bg").style.display = "none";
+  document.querySelector(".play-again").style.display = "none";
   factoryOfferPhase = true;
   wallTilingPhase = false;
   hasChosenFactory = false;
-  phase = "Factory Offer Phase"
   round = 1;
   score = 0;
   infoMsg = " ";
@@ -47,9 +47,6 @@ function initialise() {
   ]
   setupFactories();
   renderInfo();
-  console.log(bag);
-  console.log("Round: " + round);
-  console.log("Total Score: " + score);
 }
 
 function setupFactory(factory) {
@@ -250,7 +247,6 @@ function finalScoring() {
     [...allColumns].every((square) => square.firstElementChild) ? score += 7 : score += 0;
     [...allRows].every((square) => square.firstElementChild) ? score += 2 : score += 0;
   }
-  infoMsg = "Total Final Score: " + score;
 }
 
 function dummyTurn() {
@@ -272,7 +268,8 @@ function dummyTurn() {
         tile.remove();
       }
     })
-    infoMsg = `Removed a random set of ${randomPieceColour} pieces from the table`;
+    infoMsg = `Dummy removed a random set of ${randomPieceColour} pieces from the table`;
+    renderInfo();
     return;
   }
   // Create an object to document number of each coloured piece in each factory
@@ -295,6 +292,7 @@ function dummyTurn() {
       tile.remove();
     })
     infoMsg = `Dummy removed a set of 4 ${largestSetColour} pieces from the factory`;
+    renderInfo();
     return;
   }
   // Checks if any factory has a set of 3 
@@ -309,6 +307,7 @@ function dummyTurn() {
       }
     })
     infoMsg = `Dummy removed a set of 3 ${largestSetColour} pieces from the factory`;
+    renderInfo();
     return;
   }
   // Checks if any factory has a set of 2 
@@ -324,7 +323,7 @@ function dummyTurn() {
       }
     })
     infoMsg = `Dummy removed a set of 2 ${randomColour} pieces from the factory`;
-    console.log(infoMsg);
+    renderInfo();
     return;
   }
   // Create an object to document number of each coloured piece in the table
@@ -342,6 +341,7 @@ function dummyTurn() {
     [...leftmostFactory.children].forEach((tile) => {
       table.append(tile);
       infoMsg = `Dummy removed a ${randomTile.classList[1]} piece from the leftmost available factory`;
+      renderInfo();
     })
     // if there are sets of >1 in the table
   } else {
@@ -351,6 +351,7 @@ function dummyTurn() {
       if (tile.classList.contains(randomColour)) {
         tile.remove();
         infoMsg = `Dummy removed ${randomColour} pieces from the table`;
+        renderInfo();
       }
     })
   }
@@ -358,13 +359,12 @@ function dummyTurn() {
 
 function renderInfo() {
   document.querySelector(".round-tracker").innerHTML = `Round: ${round}`;
-  document.querySelector(".phase-tracker").innerHTML = `Phase: ${phase}`;
   document.querySelector(".scoreboard").innerHTML = `Total score: ${score}`;
-  document.querySelector(".messages").innerHTML = `Message: ${infoMsg}`;
   // document.querySelector(".bag").innerHTML = `Message: ${bag}`;
+  document.querySelector(".messages").innerHTML = `${infoMsg}`;
   setTimeout(() => {
     infoMsg = " ";
-    document.querySelector(".messages").innerHTML = `Message: ${infoMsg}`;
+    document.querySelector(".messages").innerHTML = " ";
   }, 2500);
 }
 
@@ -372,7 +372,8 @@ function renderInfo() {
 
 factories.addEventListener("click", (e) => {
   if (hasChosenFactory === true) {
-    infoMsg = "Place your hand pieces into the lines below";
+    infoMsg = "Unable to select until pieces in hand have been placed";
+    renderInfo();
     return;
   }
   if (!e.target.classList.contains("piece")) {
@@ -389,12 +390,11 @@ factories.addEventListener("click", (e) => {
     }
   })
   hasChosenFactory = true;
-  renderInfo();
 })
 
 table.addEventListener("click", (e) => {
   if (hasChosenFactory === true) {
-    infoMsg = "Place your hand pieces into the lines below";
+    infoMsg = "Unable to select until pieces in hand have been placed";
     renderInfo();
     return;
   }
@@ -410,7 +410,6 @@ table.addEventListener("click", (e) => {
     }
   })
   hasChosenFactory = true;
-  renderInfo();
 })
 
 let draggedPiece;
@@ -472,23 +471,24 @@ lineContainer.addEventListener("drop", (e) => {
   }, 1000);
 
   hasChosenFactory = false;
-  renderInfo();
 });
 
 document.querySelector(".game-start").addEventListener("click", initialise);
 
-document.querySelector(".pass").addEventListener("click", moveToFloor);
+document.querySelector(".pass").addEventListener("click", () => {
+  if (hand.children.length > 0) {
+    moveToFloor();
+  }
+});
 
 document.querySelector(".next").addEventListener("click", () => {
   // Disallow users to advance if there are pieces still in factories/ hand/ table
   if (hand.children.length > 0 || table.children.length > 0 || [...factoriesArray].find((factory) => factory.children.length > 0)) {
     return;
   }
-
   if (factoryOfferPhase) {
     factoryOfferPhase = false;
     wallTilingPhase = true;
-    phase = "Wall Tiling Phase";
     wallTiling();
     removePieces();
   }
@@ -496,16 +496,33 @@ document.querySelector(".next").addEventListener("click", () => {
     if (round === 5) {
       wallTiling();
       finalScoring();
-      /* end-game card to show final score and button to play again */
+      document.querySelector(".play-again").style.display = "block";
+      renderInfo();
       return;
     }
     wallTilingPhase = false;
     factoryOfferPhase = true;
-    phase = "Factory Offer Phase";
     setupFactories();
     round += 1;
     console.log(bag)
   }
   renderInfo();
 });
+
+document.querySelector(".play-again").addEventListener("click", () => {
+  for (const line of lines) {
+    [...line.children].forEach((square) => {
+      if (square.firstElementChild) {
+        square.firstElementChild.remove()
+      }
+    });
+  }
+  const wallTiles = document.querySelectorAll(".wall-tile");
+  for (const square of wallTiles) {
+    if (square.firstElementChild) {
+      square.firstElementChild.remove();
+    }
+  }
+  initialise();
+})
 

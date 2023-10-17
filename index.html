@@ -4,10 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
     <title>Azul Solo Variant</title>
   </head>
   <body>
     <div id="wrapper">
+      <div id="game-start-bg">
+        <div class="card">
+          <div class="welcome">Welcome to Azul!</div>
+          <button class="game-start">Start Game</button>
+        </div>
+      </div>
       <div id="game-container">
         <section id="factories">
           <div class="factory factory-one"></div>
@@ -21,16 +39,14 @@
         <section id="info-display">
           <div class="text-area">
             <div class="round-tracker">Round:</div>
-            <div class="phase-tracker">Phase:</div>
             <div class="scoreboard">Total score:</div>
-            <div class="messages">Message:</div>
+            <div class="messages"></div>
           </div>
-          <div>
+          <div class="buttons">
             <button class="next">Next</button>
-            <button class="game-start">Start Game</button>
             <button class="pass">Pass</button>
+            <button class="play-again" style="display: none">Play again</button>
           </div>
-          <div class="bag">Remaining pieces in bag:</div>
         </section>
         <section id="player-area">
           <div id="player-area-top">
