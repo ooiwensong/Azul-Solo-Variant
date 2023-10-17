@@ -5,6 +5,7 @@ let hasChosenFactory;
 let round;
 let score;
 let infoMsg;
+let phase;
 let bag;
 const tileColours = ["blue", "yellow", "red", "black", "white"];
 const forIteration = ["one", "two", "three", "four", "five"];
@@ -33,8 +34,10 @@ function initialise() {
   factoryOfferPhase = true;
   wallTilingPhase = false;
   hasChosenFactory = false;
+  phase = "Factory Offer Phase"
   round = 1;
   score = 0;
+  infoMsg = " ";
   bag = [
     { blue: 20 },
     { yellow: 20 },
@@ -43,6 +46,7 @@ function initialise() {
     { white: 20 },
   ]
   setupFactories();
+  renderInfo();
   console.log(bag);
   console.log("Round: " + round);
   console.log("Total Score: " + score);
@@ -149,7 +153,8 @@ function wallTiling() {
 }
 
 function wallTileScoring(currentTilePos) {
-  score += 1;
+  let currentScore = 0;
+  currentScore += 1;
   let currentTileCol = currentTilePos.classList[2];
   let nextSibling = currentTilePos.nextElementSibling;
   let previousSibling = currentTilePos.previousElementSibling;
@@ -159,7 +164,7 @@ function wallTileScoring(currentTilePos) {
       if (!nextSibling.firstElementChild) {
         break;
       } else {
-        score += 1;
+        currentScore += 1;
       }
     }
     nextSibling = nextSibling.nextElementSibling;
@@ -169,7 +174,7 @@ function wallTileScoring(currentTilePos) {
       if (!previousSibling.firstElementChild) {
         break;
       } else {
-        score += 1;
+        currentScore += 1;
       }
     }
     previousSibling = previousSibling.previousElementSibling;
@@ -183,7 +188,7 @@ function wallTileScoring(currentTilePos) {
       if (!nextSibling.firstElementChild) {
         break;
       } else {
-        score += 1;
+        currentScore += 1;
       }
     }
     nextSibling = nextSibling.nextElementSibling;
@@ -193,11 +198,13 @@ function wallTileScoring(currentTilePos) {
       if (!previousSibling.firstElementChild) {
         break;
       } else {
-        score += 1;
+        currentScore += 1;
       }
     }
     previousSibling = previousSibling.previousElementSibling;
   }
+  score += currentScore;
+  console.log("Current score: " + currentScore);
 }
 
 function floorScoring() {
@@ -243,7 +250,7 @@ function finalScoring() {
     [...allColumns].every((square) => square.firstElementChild) ? score += 7 : score += 0;
     [...allRows].every((square) => square.firstElementChild) ? score += 2 : score += 0;
   }
-  console.log("Total Final Score: " + score);
+  infoMsg = "Total Final Score: " + score;
 }
 
 function dummyTurn() {
@@ -265,7 +272,7 @@ function dummyTurn() {
         tile.remove();
       }
     })
-    console.log(`Removed a random set of ${randomPieceColour} pieces from the table`)
+    infoMsg = `Removed a random set of ${randomPieceColour} pieces from the table`;
     return;
   }
   // Create an object to document number of each coloured piece in each factory
@@ -287,7 +294,7 @@ function dummyTurn() {
     [...factoriesArray[largestSetIndex].children].forEach((tile) => {
       tile.remove();
     })
-    console.log(`Dummy removed a set of 4 ${largestSetColour} pieces from the factory`);
+    infoMsg = `Dummy removed a set of 4 ${largestSetColour} pieces from the factory`;
     return;
   }
   // Checks if any factory has a set of 3 
@@ -301,7 +308,7 @@ function dummyTurn() {
         table.append(tile);
       }
     })
-    console.log(`Dummy removed a set of 3 ${largestSetColour} pieces from the factory`);
+    infoMsg = `Dummy removed a set of 3 ${largestSetColour} pieces from the factory`;
     return;
   }
   // Checks if any factory has a set of 2 
@@ -316,7 +323,8 @@ function dummyTurn() {
         table.append(tile);
       }
     })
-    console.log(`Dummy removed a set of 2 ${randomColour} pieces from the factory`);
+    infoMsg = `Dummy removed a set of 2 ${randomColour} pieces from the factory`;
+    console.log(infoMsg);
     return;
   }
   // Create an object to document number of each coloured piece in the table
@@ -333,7 +341,7 @@ function dummyTurn() {
     randomTile.remove();
     [...leftmostFactory.children].forEach((tile) => {
       table.append(tile);
-      console.log(`Dummy removed a ${randomTile.classList[1]} piece from the leftmost factory`);
+      infoMsg = `Dummy removed a ${randomTile.classList[1]} piece from the leftmost available factory`;
     })
     // if there are sets of >1 in the table
   } else {
@@ -342,17 +350,29 @@ function dummyTurn() {
     [...table.children].forEach((tile) => {
       if (tile.classList.contains(randomColour)) {
         tile.remove();
-        console.log(`Dummy removed ${randomColour} pieces from the table`);
+        infoMsg = `Dummy removed ${randomColour} pieces from the table`;
       }
     })
   }
+}
+
+function renderInfo() {
+  document.querySelector(".round-tracker").innerHTML = `Round: ${round}`;
+  document.querySelector(".phase-tracker").innerHTML = `Phase: ${phase}`;
+  document.querySelector(".scoreboard").innerHTML = `Total score: ${score}`;
+  document.querySelector(".messages").innerHTML = `Message: ${infoMsg}`;
+  // document.querySelector(".bag").innerHTML = `Message: ${bag}`;
+  setTimeout(() => {
+    infoMsg = " ";
+    document.querySelector(".messages").innerHTML = `Message: ${infoMsg}`;
+  }, 2500);
 }
 
 /*----- game logic -----*/
 
 factories.addEventListener("click", (e) => {
   if (hasChosenFactory === true) {
-    console.log("Place your hand pieces into the lines below")
+    infoMsg = "Place your hand pieces into the lines below";
     return;
   }
   if (!e.target.classList.contains("piece")) {
@@ -369,11 +389,13 @@ factories.addEventListener("click", (e) => {
     }
   })
   hasChosenFactory = true;
+  renderInfo();
 })
 
 table.addEventListener("click", (e) => {
   if (hasChosenFactory === true) {
-    console.log("Place your hand pieces into the lines below")
+    infoMsg = "Place your hand pieces into the lines below";
+    renderInfo();
     return;
   }
   if (!e.target.classList.contains("piece")) {
@@ -388,6 +410,7 @@ table.addEventListener("click", (e) => {
     }
   })
   hasChosenFactory = true;
+  renderInfo();
 })
 
 let draggedPiece;
@@ -407,18 +430,21 @@ lineContainer.addEventListener("drop", (e) => {
 
   // If space is occupied,  piece cannot be dropped; piece cannot be dropped outside of grids
   if (e.target.classList.contains("piece") || e.target.classList.contains("line")) {
-    console.log("Not a valid space")
+    infoMsg = "Not a valid space";
+    renderInfo();
     return;
   }
   // Cannot drop piece in a row with existing pieces of different colours
   if (firstPosition.firstChild && firstPosition.firstChild.classList[1] !== draggedPieceColour) {
-    console.log("Cannot drop into line containing pieces of a different colour")
+    infoMsg = "Cannot drop into line containing pieces of a different colour";
+    renderInfo();
     return;
   }
   // Cannot drop piece if wall contains the same colour
   const targetWallTile = [...targetWallRow].find((square) => square.classList.contains(draggedPieceColour));
   if (targetWallTile.firstElementChild) {
-    console.log("Wall already contains tile of the same colour.")
+    infoMsg = "Wall already contains tile of the same colour.";
+    renderInfo();
     return;
   }
 
@@ -446,6 +472,7 @@ lineContainer.addEventListener("drop", (e) => {
   }, 1000);
 
   hasChosenFactory = false;
+  renderInfo();
 });
 
 document.querySelector(".game-start").addEventListener("click", initialise);
@@ -453,9 +480,15 @@ document.querySelector(".game-start").addEventListener("click", initialise);
 document.querySelector(".pass").addEventListener("click", moveToFloor);
 
 document.querySelector(".next").addEventListener("click", () => {
+  // Disallow users to advance if there are pieces still in factories/ hand/ table
+  if (hand.children.length > 0 || table.children.length > 0 || [...factoriesArray].find((factory) => factory.children.length > 0)) {
+    return;
+  }
+
   if (factoryOfferPhase) {
     factoryOfferPhase = false;
     wallTilingPhase = true;
+    phase = "Wall Tiling Phase";
     wallTiling();
     removePieces();
   }
@@ -468,11 +501,11 @@ document.querySelector(".next").addEventListener("click", () => {
     }
     wallTilingPhase = false;
     factoryOfferPhase = true;
+    phase = "Factory Offer Phase";
     setupFactories();
     round += 1;
     console.log(bag)
   }
-  console.log("Round: " + round);
-  console.log("Total Score: " + score)
+  renderInfo();
 });
 

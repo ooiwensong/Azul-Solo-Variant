@@ -76,7 +76,7 @@ body {
   padding: 5px;
 }
 
-#info-display div {
+#info-display > div {
   border: 1px solid black;
 }
 
