@@ -1,17 +1,11 @@
 /*----- variables -----*/
 let factoryOfferPhase;
 let wallTilingPhase;
-let hasChosenFactory = false;
+let hasChosenFactory;
 let round;
-let score = 0;
+let score;
 let infoMsg;
-const bag = [
-  { blue: 20 },
-  { yellow: 20 },
-  { red: 20 },
-  { black: 20 },
-  { white: 20 },
-]
+let bag;
 const tileColours = ["blue", "yellow", "red", "black", "white"];
 const forIteration = ["one", "two", "three", "four", "five"];
 const floorScoreLookup = {
@@ -35,6 +29,25 @@ const lines = document.querySelectorAll(".line");
 const floor = document.querySelectorAll(".floor-tile");
 
 /*----- functions -----*/
+function initialise() {
+  factoryOfferPhase = true;
+  wallTilingPhase = false;
+  hasChosenFactory = false;
+  round = 1;
+  score = 0;
+  bag = [
+    { blue: 20 },
+    { yellow: 20 },
+    { red: 20 },
+    { black: 20 },
+    { white: 20 },
+  ]
+  setupFactories();
+  console.log(bag);
+  console.log("Round: " + round);
+  console.log("Total Score: " + score);
+}
+
 function setupFactory(factory) {
   let selectedTile;
   let tileQuantity;
@@ -87,7 +100,6 @@ function setupFactory(factory) {
 
 function setupFactories() {
   factoriesArray.forEach((factory) => setupFactory(factory));
-  console.log(bag);
 }
 
 function moveToFloor() {
@@ -103,6 +115,37 @@ function moveToFloor() {
     hand.firstChild.setAttribute("draggable", false);
     square.append(hand.firstChild);
   }
+  hasChosenFactory = false;
+
+  setTimeout(() => {
+    dummyTurn();
+  }, 1000);
+}
+
+function wallTiling() {
+  console.log("wall tiling phase active");
+  for (const line of lines) {
+    const containers = line.children;
+    // Prevents error occurring if users press button twice
+    if (!containers[0].firstElementChild) {
+      continue;
+    }
+    // if line is not complete, move on to the next line
+    if (![...containers].every((item) => item.firstChild)) {
+      continue;
+    }
+    // if line is complete, append the first position piece to corresponding wall tile
+    const currentLineRow = line.classList[1];
+    const currentWallRow = document.querySelectorAll(`.wall-tile.${currentLineRow}`);
+    const firstTile = line.firstElementChild.firstElementChild;
+    const firstTileColour = firstTile.classList[1];
+    const currentWallTile = [...currentWallRow].find((square) => square.classList.contains(firstTileColour));
+    firstTile.setAttribute("draggable", false);
+    currentWallTile.append(firstTile);
+    wallTileScoring(currentWallTile);
+  }
+  floorScoring();
+  console.log("Total score: " + score);
 }
 
 function wallTileScoring(currentTilePos) {
@@ -168,6 +211,25 @@ function floorScoring() {
   score -= floorScoreLookup[count.toString()];
 }
 
+function removePieces() {
+  for (const line of lines) {
+    if (line.firstElementChild.firstElementChild) {
+      continue;
+    }
+    const squares = line.children;
+    for (const square of squares) {
+      if (square.firstElementChild) {
+        square.firstElementChild.remove();
+      }
+    }
+  }
+  for (const square of floor) {
+    if (square.firstElementChild) {
+      square.firstElementChild.remove();
+    }
+  }
+}
+
 function finalScoring() {
   // Checks for 5 of a kind in the wall
   for (const colour of tileColours) {
@@ -181,7 +243,7 @@ function finalScoring() {
     [...allColumns].every((square) => square.firstElementChild) ? score += 7 : score += 0;
     [...allRows].every((square) => square.firstElementChild) ? score += 2 : score += 0;
   }
-  console.log(score);
+  console.log("Total Final Score: " + score);
 }
 
 function dummyTurn() {
@@ -273,7 +335,7 @@ function dummyTurn() {
       table.append(tile);
       console.log(`Dummy removed a ${randomTile.classList[1]} piece from the leftmost factory`);
     })
-    // if there are sets of larger than 1 in the table
+    // if there are sets of >1 in the table
   } else {
     const largestTableSetsColours = Object.keys(tableState).filter((key) => tableState[key] === largestSetQty);
     const randomColour = largestTableSetsColours[Math.floor(Math.random() * largestTableSetsColours.length)];
@@ -287,11 +349,9 @@ function dummyTurn() {
 }
 
 /*----- game logic -----*/
-setupFactories();
-
 
 factories.addEventListener("click", (e) => {
-  if (hasChosenFactory == true) {
+  if (hasChosenFactory === true) {
     console.log("Place your hand pieces into the lines below")
     return;
   }
@@ -312,7 +372,7 @@ factories.addEventListener("click", (e) => {
 })
 
 table.addEventListener("click", (e) => {
-  if (hasChosenFactory == true) {
+  if (hasChosenFactory === true) {
     console.log("Place your hand pieces into the lines below")
     return;
   }
@@ -388,51 +448,31 @@ lineContainer.addEventListener("drop", (e) => {
   hasChosenFactory = false;
 });
 
-document.querySelector(".button").addEventListener("click", () => {
-  console.log("wall tiling phase active");
-  for (const line of lines) {
-    const containers = line.children;
-    // Prevents error occurring if users press button twice
-    if (!containers[0].firstElementChild) {
-      continue;
-    }
-    // if line is not complete, move on to the next line
-    if (![...containers].every((item) => item.firstChild)) {
-      continue;
-    }
-    // if line is complete, append the first position piece to corresponding wall tile
-    const currentLineRow = line.classList[1];
-    const currentWallRow = document.querySelectorAll(`.wall-tile.${currentLineRow}`);
-    const firstTile = line.firstElementChild.firstElementChild;
-    const firstTileColour = firstTile.classList[1];
-    const currentWallTile = [...currentWallRow].find((square) => square.classList.contains(firstTileColour));
-    firstTile.setAttribute("draggable", false);
-    currentWallTile.append(firstTile);
-    wallTileScoring(currentWallTile);
+document.querySelector(".game-start").addEventListener("click", initialise);
+
+document.querySelector(".pass").addEventListener("click", moveToFloor);
+
+document.querySelector(".next").addEventListener("click", () => {
+  if (factoryOfferPhase) {
+    factoryOfferPhase = false;
+    wallTilingPhase = true;
+    wallTiling();
+    removePieces();
   }
-  floorScoring();
-  console.log("Total score: " + score);
+  if (wallTilingPhase) {
+    if (round === 5) {
+      wallTiling();
+      finalScoring();
+      /* end-game card to show final score and button to play again */
+      return;
+    }
+    wallTilingPhase = false;
+    factoryOfferPhase = true;
+    setupFactories();
+    round += 1;
+    console.log(bag)
+  }
+  console.log("Round: " + round);
+  console.log("Total Score: " + score)
 });
 
-
-document.querySelector(".remove").addEventListener("click", removePieces);
-function removePieces() {
-  for (const line of lines) {
-    if (line.firstElementChild.firstElementChild) {
-      continue;
-    }
-    const squares = line.children;
-    for (const square of squares) {
-      if (square.firstElementChild) {
-        square.firstElementChild.remove();
-      }
-    }
-  }
-  for (const square of floor) {
-    if (square.firstElementChild) {
-      square.firstElementChild.remove();
-    }
-  }
-}
-
-document.querySelector(".final").addEventListener("click", finalScoring);
