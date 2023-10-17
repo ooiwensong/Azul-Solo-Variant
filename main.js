@@ -117,10 +117,6 @@ function moveToFloor() {
     square.append(hand.firstChild);
   }
   hasChosenFactory = false;
-
-  setTimeout(() => {
-    dummyTurn();
-  }, 1000);
 }
 
 function wallTiling() {
@@ -333,8 +329,8 @@ function dummyTurn() {
   }, {})
   // Find the colour and quantity of the largest set in the table
   const largestSetQty = Math.max(...Object.values(tableState));
-  // if there are only sets of ones in the table
-  if (largestSetQty === 1) {
+  // if there are only sets of ones in the table OR if there are no pieces in the table
+  if (largestSetQty <= 1) {
     const leftmostFactory = [...factoriesArray].find((factory) => factory.children.length > 0);
     const randomTile = leftmostFactory.children[Math.floor(Math.random() * 4)];
     randomTile.remove();
@@ -446,7 +442,6 @@ lineContainer.addEventListener("drop", (e) => {
     renderInfo();
     return;
   }
-
   // Append all the tiles in hand to the selected row
   for (const square of [...targetRow.children]) {
     // Once the hand is empty, break from the loop
@@ -476,9 +471,14 @@ lineContainer.addEventListener("drop", (e) => {
 document.querySelector(".game-start").addEventListener("click", initialise);
 
 document.querySelector(".pass").addEventListener("click", () => {
+  // append all tiles in hand to the floor
   if (hand.children.length > 0) {
     moveToFloor();
   }
+  // dummy takes a turn after passing
+  setTimeout(() => {
+    dummyTurn();
+  }, 1000);
 });
 
 document.querySelector(".next").addEventListener("click", () => {
