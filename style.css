@@ -8,6 +8,7 @@ body {
   height: 100vh;
   margin: 0;
   background-color: #012c3c;
+  position: relative;
 }
 
 #wrapper {
@@ -26,8 +27,7 @@ body {
   position: absolute;
   backdrop-filter: blur(25px);
   display: flex;
-  transition-property: display;
-  transition-duration: 1000ms;
+  z-index: 20;
 }
 
 #game-start-bg > .card {
@@ -120,8 +120,8 @@ body {
   background-color: #f4ebe3;
   grid-row: 1 / span 2;
 }
-
-.text-area > div {
+.text-area > .round-tracker,
+.text-area > .scoreboard {
   font-family: "roboto", sans-serif;
   font-weight: 400;
   font-size: 20px;
@@ -169,14 +169,18 @@ button {
   box-shadow: 1.5px 1.5px 3px black,
     -1.5px -1.5px 1px rgba(0, 0, 0, 0.427) inset,
     1.5px 1.5px 1px rgba(255, 255, 255, 0.577) inset;
+  position: relative;
+  z-index: 15;
 }
 
 #player-area-top {
   grid-row: 1/2;
+  height: auto;
   display: flex;
   justify-content: center;
   border-radius: 5px;
   border: solid rgba(255, 255, 255, 0);
+  padding-top: 3px;
 }
 
 #floor {
@@ -199,6 +203,11 @@ button {
   height: 50px;
 }
 
+.floor-score {
+  font-size: 18px;
+  font-weight: 500;
+}
+
 #line-container {
   max-width: 290px;
   max-height: 280px;
@@ -207,9 +216,16 @@ button {
 
 #arrow-container {
   max-width: 30px;
-  max-height: 250px;
+  max-height: auto;
   flex: 1;
-  border: solid darkblue;
+  display: grid;
+  grid-template-rows: repeat(5, 50px);
+  gap: 4px;
+}
+
+.arrow > img {
+  height: 50px;
+  padding-left: 3px;
 }
 
 #wall {
@@ -238,32 +254,48 @@ button {
 
 .blue {
   background-color: #0083ad;
+  background-image: url("https://azul-score-tracker.web.app/static/media/tile-blue.3339b75eb9412d2415aec10ebe463103.svg");
 }
 
 .yellow {
   background-color: #ffbf3c;
+  background-image: url("https://azul-score-tracker.web.app/static/media/tile-yellow.e6478f291bc68f465457d03d865a42fe.svg");
+  fill: red;
 }
 
 .red {
   background-color: #f5333f;
+  background-image: url("https://azul-score-tracker.web.app/static/media/tile-red.9e8b065e47490a946ed7c695868bd8f1.svg");
 }
 
 .black {
   background-color: #454545;
+  background-image: url("https://azul-score-tracker.web.app/static/media/tile-black.8934f74043e9da77c5fca7de16d15906.svg");
 }
 
 .white {
   background-color: #ffffff;
+  background-image: url("https://azul-score-tracker.web.app/static/media/tile-turquoise.e25121c6aa4153cb0a6481da8fb0c12e.svg");
 }
 
 .wall-tile {
-  /* border: 2px solid #cbad8d; */
   width: 50px;
   height: 50px;
+  position: relative;
+}
+
+.wall-tile::before {
+  content: "";
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.7);
+  top: 0;
+  left: 0;
 }
 
 .wall-tile.blue {
-  background-color: #0082ad3f;
+  background-color: #0083ad3f;
 }
 .wall-tile.yellow {
   background-color: #ffbe3c3f;
