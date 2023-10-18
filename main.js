@@ -106,15 +106,15 @@ function setupFactories() {
 function moveToFloor() {
   for (const square of floor) {
     // if hand is empty, break from the loop
-    if (!hand.firstChild) {
+    if (!hand.firstElementChild) {
       break;
     }
     // if floor tile contains a piece, move on to the next
-    if (square.firstChild) {
+    if (square.firstElementChild) {
       continue;
     }
-    hand.firstChild.setAttribute("draggable", false);
-    square.append(hand.firstChild);
+    hand.firstElementChild.setAttribute("draggable", false);
+    square.append(hand.firstElementChild);
   }
   hasChosenFactory = false;
 }
@@ -128,7 +128,7 @@ function wallTiling() {
       continue;
     }
     // if line is not complete, move on to the next line
-    if (![...containers].every((item) => item.firstChild)) {
+    if (![...containers].every((item) => item.firstElementChild)) {
       continue;
     }
     // if line is complete, append the first position piece to corresponding wall tile
@@ -430,7 +430,7 @@ lineContainer.addEventListener("drop", (e) => {
     return;
   }
   // Cannot drop piece in a row with existing pieces of different colours
-  if (firstPosition.firstChild && firstPosition.firstChild.classList[1] !== draggedPieceColour) {
+  if (firstPosition.firstElementChild && firstPosition.firstElementChild.classList[1] !== draggedPieceColour) {
     infoMsg = "Cannot drop into line containing pieces of a different colour";
     renderInfo();
     return;
@@ -445,15 +445,15 @@ lineContainer.addEventListener("drop", (e) => {
   // Append all the tiles in hand to the selected row
   for (const square of [...targetRow.children]) {
     // Once the hand is empty, break from the loop
-    if (!hand.firstChild) {
+    if (!hand.firstElementChild) {
       break;
     }
     // if square contains a piece, move on to the next empty square
-    if (square.firstChild && square.firstChild.classList.contains("piece")) {
+    if (square.firstElementChild && square.firstElementChild.classList.contains("piece")) {
       continue;
     } else {
-      hand.firstChild.setAttribute("draggable", false);
-      square.append(hand.firstChild);
+      hand.firstElementChild.setAttribute("draggable", false);
+      square.append(hand.firstElementChild);
     }
   }
   // If there are leftover pieces in hand, append them to floor
@@ -471,6 +471,10 @@ lineContainer.addEventListener("drop", (e) => {
 document.querySelector(".game-start").addEventListener("click", initialise);
 
 document.querySelector(".pass").addEventListener("click", () => {
+  // users cannot pass without having selected pieces from factory/ table;
+  if (!hasChosenFactory) {
+    return;
+  }
   // append all tiles in hand to the floor
   if (hand.children.length > 0) {
     moveToFloor();
@@ -486,26 +490,18 @@ document.querySelector(".next").addEventListener("click", () => {
   if (hand.children.length > 0 || table.children.length > 0 || [...factoriesArray].find((factory) => factory.children.length > 0)) {
     return;
   }
-  if (factoryOfferPhase) {
-    factoryOfferPhase = false;
-    wallTilingPhase = true;
+  if (round === 5) {
     wallTiling();
-    removePieces();
+    finalScoring();
+    document.querySelector(".play-again").style.display = "block";
+    renderInfo();
+    return;
   }
-  if (wallTilingPhase) {
-    if (round === 5) {
-      wallTiling();
-      finalScoring();
-      document.querySelector(".play-again").style.display = "block";
-      renderInfo();
-      return;
-    }
-    wallTilingPhase = false;
-    factoryOfferPhase = true;
-    setupFactories();
-    round += 1;
-    console.log(bag)
-  }
+  wallTiling();
+  removePieces();
+  setupFactories();
+  round += 1;
+  console.log(bag)
   renderInfo();
 });
 
