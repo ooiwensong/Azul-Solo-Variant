@@ -1,3 +1,7 @@
+:root {
+  --bg-colour: #f4f4f4;
+}
+
 * {
   box-sizing: border-box;
   font-family: "Cinzel", serif;
@@ -12,8 +16,8 @@ body {
 }
 
 #wrapper {
-  background-image: url(https://img.freepik.com/premium-photo/seamless-portugal-spain-azulejo-tile-high-resolution_117038-180.jpg?w=2000);
-  background-size: 75%;
+  background-image: url("https://x.boardgamearena.net/data/themereleases/current/games/azul/230829-2333/img/background.jpg");
+  background-size: 50%;
   width: 1010px;
   height: 100%;
   display: flex;
@@ -31,13 +35,14 @@ body {
 }
 
 #game-start-bg > .card {
-  background-color: #f4ebe3;
+  background-image: url("https://x.boardgamearena.net/data/themereleases/current/games/azul/230829-2333/img/background.jpg");
+  background-size: cover;
   width: auto;
   height: auto;
   margin: auto auto;
   padding: 50px 20px;
   border-radius: 10px;
-  border: 3px solid #012c3c;
+  box-shadow: 0 0 10px 0 black;
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -53,7 +58,7 @@ body {
 }
 
 #game-container {
-  background-color: #f4ebe3;
+  background-color: var(--bg-colour);
   flex: 1;
   margin: auto auto;
   height: 650px;
@@ -117,11 +122,13 @@ body {
 }
 
 .text-area {
-  background-color: #f4ebe3;
+  background-color: var(--bg-colour);
   grid-row: 1 / span 2;
 }
+
 .text-area > .round-tracker,
-.text-area > .scoreboard {
+.text-area > .scoreboard,
+.messages {
   font-family: "roboto", sans-serif;
   font-weight: 400;
   font-size: 20px;
@@ -130,6 +137,7 @@ body {
 
 .messages {
   margin-top: 10px;
+  font-size: 15px;
 }
 
 .buttons {
@@ -153,6 +161,9 @@ button {
 
 .factory {
   flex: 1;
+  background: no-repeat center/contain
+    url("https://x.boardgamearena.net/data/themereleases/current/games/azul/230829-2333/img/factory.png");
+  background-color: var(--bg-colour);
   display: grid;
   grid-template-columns: 50px 50px;
   grid-template-rows: 50px 50px;
@@ -166,7 +177,7 @@ button {
   height: 50px;
   margin-right: 3px;
   border-radius: 4px;
-  box-shadow: 1.5px 1.5px 3px black,
+  box-shadow: 1.5px 1.5px 2px black,
     -1.5px -1.5px 1px rgba(0, 0, 0, 0.427) inset,
     1.5px 1.5px 1px rgba(255, 255, 255, 0.577) inset;
   position: relative;
