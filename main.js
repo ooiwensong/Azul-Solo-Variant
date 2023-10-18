@@ -1,6 +1,4 @@
 /*----- variables -----*/
-let factoryOfferPhase;
-let wallTilingPhase;
 let hasChosenFactory;
 let round;
 let score;
@@ -32,8 +30,6 @@ const floor = document.querySelectorAll(".floor-tile");
 function initialise() {
   document.querySelector("#game-start-bg").style.display = "none";
   document.querySelector(".play-again").style.display = "none";
-  factoryOfferPhase = true;
-  wallTilingPhase = false;
   hasChosenFactory = false;
   round = 1;
   score = 0;
@@ -361,7 +357,10 @@ function renderInfo() {
   setTimeout(() => {
     infoMsg = " ";
     document.querySelector(".messages").innerHTML = " ";
-  }, 2500);
+  }, 2000);
+  if (round === 5) {
+    document.querySelector(".round-tracker").innerText += " (last round!)";
+  }
 }
 
 /*----- game logic -----*/
@@ -463,7 +462,7 @@ lineContainer.addEventListener("drop", (e) => {
   // Dummy makes a move after 1sec.
   setTimeout(() => {
     dummyTurn();
-  }, 1000);
+  }, 750);
 
   hasChosenFactory = false;
 });
@@ -482,7 +481,7 @@ document.querySelector(".pass").addEventListener("click", () => {
   // dummy takes a turn after passing
   setTimeout(() => {
     dummyTurn();
-  }, 1000);
+  }, 750);
 });
 
 document.querySelector(".next").addEventListener("click", () => {
@@ -495,6 +494,7 @@ document.querySelector(".next").addEventListener("click", () => {
     finalScoring();
     document.querySelector(".play-again").style.display = "block";
     renderInfo();
+    document.querySelector(".round-tracker").innerText = "Game Over!";
     return;
   }
   wallTiling();
