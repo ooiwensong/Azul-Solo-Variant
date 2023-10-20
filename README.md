@@ -20,7 +20,7 @@ This version of Azul is based on the unofficial solo variant rules by Ricky Roya
 
 # Getting Started
 
-[Click here to play Azul!](https://ooiwensong.github.io/Azul-Solo-Variant/)
+<a href="https://ooiwensong.github.io/Azul-Solo-Variant/" target="_blank">Click here to play Azul!</a>
 
 # Next Steps
 
